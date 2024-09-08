@@ -2,7 +2,7 @@
 
 public class Post : BaseEntity
 {
-    public Guid UserId { get; set; }
+    public Guid AutherId { get; set; }
     public string? Title { get; set; }
     public string[]? Images { get; set; }
     public Guid? OriginalPostId { get; set; }

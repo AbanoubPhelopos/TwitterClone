@@ -1,9 +1,11 @@
-﻿namespace Twitter.Application.Models;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class User : BaseEntity
+namespace Twitter.Application.Models;
+
+public class User : IdentityUser<Guid>
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
+    public string FirstName { get; set; } = default!;
+    public string LastName { get; set; } = default!;
+    
+    public ICollection<Post> Posts = new List<Post>();
 }
