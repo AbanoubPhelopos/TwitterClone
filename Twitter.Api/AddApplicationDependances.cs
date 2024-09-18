@@ -1,4 +1,7 @@
-﻿using Twitter.Api.Authantication;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Twitter.Api.Authantication;
 using Twitter.Application.Services;
 
 namespace Twitter.Api;
@@ -28,8 +31,29 @@ public static class AddApplicationDependances
     {
         services.AddSingleton<IJwtProvider, JwtProvider>();
         services.AddScoped<IAuthServices, AuthServices>();
+        services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(o =>
+            {
+                o.SaveToken = true;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("RqqpETYPyJeeByw786ufuj333OdlcG0I")),
+                    ValidIssuer = "TwitterApp",
+                    ValidAudience = "TwitterApp users"
+                };
+            });
         
-        services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<ApplicationDbContext>();
         return services;
     }
 
