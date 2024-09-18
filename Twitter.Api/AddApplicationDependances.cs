@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Twitter.Api.Authantication;
+using Twitter.Application.Authantication;
 using Twitter.Application.Services;
 
 namespace Twitter.Api;
@@ -31,8 +31,10 @@ public static class AddApplicationDependances
     {
         services.AddSingleton<IJwtProvider, JwtProvider>();
         services.AddScoped<IAuthServices, AuthServices>();
-        services.AddIdentity<User, IdentityRole>()
+        
+        services.AddIdentity<User, IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
+        
         services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

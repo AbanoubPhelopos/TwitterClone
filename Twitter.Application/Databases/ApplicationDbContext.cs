@@ -2,17 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Twitter.Application.Models;
 
 namespace Twitter.Application.Databases;
 
-public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
-
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
-    {
-    }
-
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Like> Likes => Set<Like>();

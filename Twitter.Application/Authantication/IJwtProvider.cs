@@ -1,4 +1,4 @@
-﻿namespace Twitter.Api.Authantication;
+﻿namespace Twitter.Application.Authantication;
 
 public interface IJwtProvider
 {

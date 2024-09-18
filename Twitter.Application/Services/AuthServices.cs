@@ -1,6 +1,5 @@
 ﻿namespace Twitter.Application.Services;
-
-public class AuthServices(UserManager<User> userManager) : IAuthServices
+public class AuthServices(UserManager<User> userManager,IJwtProvider jwtProvider) : IAuthServices
 {
     public async Task<AuthResponse?> GetTokenAsync(string email, string password,
         CancellationToken cancellationToken = default)
@@ -15,8 +14,8 @@ public class AuthServices(UserManager<User> userManager) : IAuthServices
         if (!isValidPassword)
             return null;
 
-        //add jwt config logic
-
-        return new AuthResponse(user.Id.ToString(), user.Email, user.FirstName, user.LastName, "fskh", 3600);
+        var (token, expiresIn) = jwtProvider.GenerateToken(user);
+        
+        return new AuthResponse(user.Id.ToString(), user.Email, user.FirstName, user.LastName, token,expiresIn*60);
     }
 }

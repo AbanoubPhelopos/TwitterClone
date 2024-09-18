@@ -3,7 +3,7 @@
 namespace Twitter.Application.Models;
 
 public class User : IdentityUser<Guid>
-{
+{ 
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;
 

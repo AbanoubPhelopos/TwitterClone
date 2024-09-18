@@ -10,7 +10,7 @@ public class AccountController(UserManager<User> userManager,IAuthServices authS
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
         var user = new User
-            { FirstName = registerDto.FirstName, LastName = registerDto.LastName, Email = registerDto.Email,UserName = registerDto.Email};
+            { FirstName = registerDto.FirstName, LastName = registerDto.LastName, Email = registerDto.Email,UserName = registerDto.Email,};
         var result = await userManager.CreateAsync(user, registerDto.Password);
         return Ok(result.Errors);
     }
