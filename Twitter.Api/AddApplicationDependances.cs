@@ -1,4 +1,7 @@
-﻿namespace Twitter.Api;
+﻿using Twitter.Api.Authantication;
+using Twitter.Application.Services;
+
+namespace Twitter.Api;
 public static class AddApplicationDependances
 {
     public static IServiceCollection AddApplicationDependanceies(this IServiceCollection services,IConfigurationManager configuration)
@@ -9,7 +12,9 @@ public static class AddApplicationDependances
         services.AddEndpointsApiExplorer()
             .AddSwaggerGen()
             .AddDbConfig(configuration)
-            .AddAuthConfig();
+            .AddAuthConfig()
+            .AddValidationconfig()
+            .AddServicesDependancy();
         
         return services;
     }
@@ -21,14 +26,22 @@ public static class AddApplicationDependances
     }
     private static IServiceCollection AddAuthConfig(this IServiceCollection services)
     {
+        services.AddSingleton<IJwtProvider, JwtProvider>();
+        services.AddScoped<IAuthServices, AuthServices>();
+        
         services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<ApplicationDbContext>();
         return services;
     }
 
-    private static IServiceCollection AddValidatorconfig(this IServiceCollection services)
+    private static IServiceCollection AddValidationconfig(this IServiceCollection services)
     {
-        services.AddFluentValidationAutoValidation()  // Ensure FluentValidation setup
+        services.AddFluentValidationAutoValidation()
                         .AddValidatorsFromAssembly(typeof(LoginValidation).Assembly);
+        return services;
+    }
+
+    private static IServiceCollection AddServicesDependancy(this IServiceCollection services)
+    {
         return services;
     }
     

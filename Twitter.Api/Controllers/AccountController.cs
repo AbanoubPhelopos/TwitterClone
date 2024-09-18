@@ -1,8 +1,10 @@
-﻿namespace Twitter.Api.Controllers;
+﻿using Twitter.Application.Services;
+
+namespace Twitter.Api.Controllers;
 
 [ApiController]
-[Route("api/profile")]
-public class AccountController(UserManager<User> userManager) : ControllerBase
+[Route("[controller]")]
+public class AccountController(UserManager<User> userManager,IAuthServices authServices) : ControllerBase
 {
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
@@ -11,5 +13,14 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
             { FirstName = registerDto.FirstName, LastName = registerDto.LastName, Email = registerDto.Email,UserName = registerDto.Email};
         var result = await userManager.CreateAsync(user, registerDto.Password);
         return Ok(result.Errors);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login(LoginDto loginDto,CancellationToken cancellationToken)
+    {
+        var authResult = 
+            await authServices.GetTokenAsync(loginDto.Email,loginDto.Password,cancellationToken);
+        
+        return authResult is null ? BadRequest("Invalid Email or Password") : Ok(authResult);
     }
 }
