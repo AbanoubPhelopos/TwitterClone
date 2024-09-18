@@ -9,3 +9,12 @@ global using Twitter.Api;
 
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
+
+global using System.Reflection;
+global using System.Text;
+global using Mapster;
+global using MapsterMapper;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.IdentityModel.Tokens;
+global using Twitter.Application.Authantication;
+global using Twitter.Application.Services;

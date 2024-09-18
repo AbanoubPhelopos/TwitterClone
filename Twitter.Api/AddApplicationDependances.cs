@@ -1,10 +1,4 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Twitter.Application.Authantication;
-using Twitter.Application.Services;
-
-namespace Twitter.Api;
+﻿namespace Twitter.Api;
 public static class AddApplicationDependances
 {
     public static IServiceCollection AddApplicationDependanceies(this IServiceCollection services,IConfigurationManager configuration)
@@ -17,6 +11,7 @@ public static class AddApplicationDependances
             .AddDbConfig(configuration)
             .AddAuthConfig()
             .AddValidationconfig()
+            .AddMappingConfig()
             .AddServicesDependancy();
         
         return services;
@@ -65,10 +60,19 @@ public static class AddApplicationDependances
                         .AddValidatorsFromAssembly(typeof(LoginValidation).Assembly);
         return services;
     }
-
+    
+    private static IServiceCollection AddMappingConfig(this IServiceCollection services)
+    {
+        var mappingConfig = TypeAdapterConfig.GlobalSettings;
+        mappingConfig.Scan(Assembly.GetExecutingAssembly());
+        services.AddSingleton<IMapper>(new Mapper(mappingConfig));
+        return services;
+    }
+    
     private static IServiceCollection AddServicesDependancy(this IServiceCollection services)
     {
         return services;
     }
+    
     
 }
