@@ -1,6 +1,3 @@
-
-using Twitter.Api;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationDependanceies(builder.Configuration);
@@ -14,7 +11,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapIdentityApi<User>();
+//app.MapIdentityApi<User>();
 
 app.UseHttpsRedirection();
 
