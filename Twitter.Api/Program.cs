@@ -7,14 +7,14 @@ builder.Services.AddApplicationDependanceies(builder.Configuration);
 
 var app = builder.Build();
 
-app.MapIdentityApi<User>();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapIdentityApi<User>();
 
 app.UseHttpsRedirection();
 

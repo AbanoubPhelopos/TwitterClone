@@ -1,5 +1,4 @@
 ﻿namespace Twitter.Api;
-
 public static class AddApplicationDependances
 {
     public static IServiceCollection AddApplicationDependanceies(this IServiceCollection services,IConfigurationManager configuration)
@@ -23,6 +22,13 @@ public static class AddApplicationDependances
     private static IServiceCollection AddAuthConfig(this IServiceCollection services)
     {
         services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<ApplicationDbContext>();
+        return services;
+    }
+
+    private static IServiceCollection AddValidatorconfig(this IServiceCollection services)
+    {
+        services.AddFluentValidationAutoValidation()  // Ensure FluentValidation setup
+                        .AddValidatorsFromAssembly(typeof(LoginValidation).Assembly);
         return services;
     }
     

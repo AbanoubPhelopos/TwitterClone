@@ -6,6 +6,8 @@ public class User : IdentityUser<Guid>
 {
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;
+
+    public string? Image { get; set; } = default!;
     
     public ICollection<Post> Posts = new List<Post>();
 }
