@@ -8,4 +8,6 @@ public class Comment :BaseEntity
     public Post Post { get; set; }
     public User Writer { get; set; }
     public string Content { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

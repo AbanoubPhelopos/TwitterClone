@@ -13,7 +13,7 @@ namespace Twitter.Api.Controllers;
 public class PostController(ApplicationDbContext context) : BaseController
 {
     private readonly ApplicationDbContext _context = context;
-
+    
     [HttpPost(Name = "CreatePost")]
     [Authorize]
     public async Task<ActionResult<PostResponse>> CreatePostAsync([FromBody] CreatePostRequest request)
@@ -76,12 +76,14 @@ public class PostController(ApplicationDbContext context) : BaseController
         var total = await query.CountAsync();
         var offset = (page!.Value - 1) * pageSize!.Value;
         var limit = pageSize!.Value;
+        var pages = (int)Math.Ceiling((double)total / pageSize!.Value);
+
 
         query = query.Skip(offset).Take(limit);
 
         var items = await query.Select(SelectPost()).ToListAsync();
 
-        return Ok(new PagedListResponse<PostResponse>(items, page!.Value, total / pageSize!.Value));
+        return Ok(new PagedListResponse<PostResponse>(items, page!.Value, pages));
     }
 
     private static Expression<Func<Post, PostResponse>> SelectPost()
