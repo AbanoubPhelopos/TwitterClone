@@ -1,10 +1,10 @@
-﻿namespace Twitter.Contract.Auth;
+﻿using Twitter.Contract.Users;
+
+namespace Twitter.Contract.Auth;
 
 public record AuthResponse(
-    string Id,
-    string? Email,
-    string FristName,
-    string LastName,
-    string Token,
+    UserResponse Me,
+    string AccessToken,
+    string RefreshToken,
     int ExpiresIn
 );

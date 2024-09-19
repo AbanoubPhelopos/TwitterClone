@@ -1,19 +1,46 @@
-﻿namespace Twitter.Api;
+﻿using Microsoft.OpenApi.Models;
+
+namespace Twitter.Api;
 public static class AddApplicationDependances
 {
-    public static IServiceCollection AddApplicationDependanceies(this IServiceCollection services,IConfigurationManager configuration)
+    public static IServiceCollection AddApplicationDependencies(this IServiceCollection services, IConfigurationManager configuration)
     {
 
         services.AddControllers();
 
         services.AddEndpointsApiExplorer()
-            .AddSwaggerGen()
+            .AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+
+            })
             .AddDbConfig(configuration)
             .AddAuthConfig()
             .AddValidationconfig()
             .AddMappingConfig()
             .AddServicesDependancy();
-        
+
         return services;
     }
 
@@ -26,10 +53,10 @@ public static class AddApplicationDependances
     {
         services.AddSingleton<IJwtProvider, JwtProvider>();
         services.AddScoped<IAuthServices, AuthServices>();
-        
+
         services.AddIdentity<User, IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
-        
+
         services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,6 +65,7 @@ public static class AddApplicationDependances
             .AddJwtBearer(o =>
             {
                 o.SaveToken = true;
+                o.MapInboundClaims = false;
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -50,7 +78,7 @@ public static class AddApplicationDependances
                     ValidAudience = "TwitterApp users"
                 };
             });
-        
+
         return services;
     }
 
@@ -60,7 +88,7 @@ public static class AddApplicationDependances
                         .AddValidatorsFromAssembly(typeof(LoginValidation).Assembly);
         return services;
     }
-    
+
     private static IServiceCollection AddMappingConfig(this IServiceCollection services)
     {
         var mappingConfig = TypeAdapterConfig.GlobalSettings;
@@ -68,11 +96,12 @@ public static class AddApplicationDependances
         services.AddSingleton<IMapper>(new Mapper(mappingConfig));
         return services;
     }
-    
+
     private static IServiceCollection AddServicesDependancy(this IServiceCollection services)
     {
+        
         return services;
     }
-    
-    
+
+
 }

@@ -18,3 +18,4 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.IdentityModel.Tokens;
 global using Twitter.Application.Authantication;
 global using Twitter.Application.Services;
+global using Microsoft.AspNetCore.Authorization;

@@ -1,26 +1,76 @@
-﻿using Twitter.Application.Services;
+﻿using Twitter.Contract.Users;
 
 namespace Twitter.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class AccountController(UserManager<User> userManager,IAuthServices authServices) : ControllerBase
+[Route("api/account")]
+public class AccountController(UserManager<User> userManager, IAuthServices authServices, IJwtProvider jwtProvider) : BaseController
 {
     [HttpPost("register")]
-    public async Task<ActionResult> Register(RegisterDto registerDto)
+    public async Task<ActionResult<AuthResponse>> Register(RegisterDto request)
     {
-        var user = new User
-            { FirstName = registerDto.FirstName, LastName = registerDto.LastName, Email = registerDto.Email,UserName = registerDto.Email,};
-        var result = await userManager.CreateAsync(user, registerDto.Password);
-        return Ok(result.Errors);
+        User newUser = new()
+        {
+            Id = Guid.NewGuid(),
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+        };
+
+        var result = await userManager.CreateAsync(newUser, request.Password);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception("RegistrationFailed");
+        }
+
+        var (accessToken, expiresIn) = jwtProvider.GenerateToken(newUser);
+
+        return Ok(new AuthResponse(newUser.Adapt<UserResponse>(), accessToken, accessToken, expiresIn));
     }
 
-    [HttpPost("login")]
-    public async Task<ActionResult> Login(LoginDto loginDto,CancellationToken cancellationToken)
+
+    [HttpPost("login", Name = "Login")]
+    public async Task<ActionResult<AuthResponse>> Login(LoginDto loginDto, CancellationToken cancellationToken)
     {
-        var authResult = 
-            await authServices.GetTokenAsync(loginDto.Email,loginDto.Password,cancellationToken);
-        
-        return authResult is null ? BadRequest("Invalid Email or Password") : Ok(authResult);
+        var user = await userManager.FindByEmailAsync(loginDto.Email);
+
+        if (user is null)
+        {
+            throw new Exception("InvalidCredential");
+        }
+
+        var result = await userManager.CheckPasswordAsync(user, loginDto.Password);
+
+
+        if (result == false)
+        {
+            throw new Exception("InvalidCredential");
+        }
+
+
+        var (accessToken, expiresIn) = jwtProvider.GenerateToken(user);
+
+        return Ok(new AuthResponse(user.Adapt<UserResponse>(), accessToken, accessToken, expiresIn));
+
     }
+
+
+    [HttpGet("me")]
+    public async Task<ActionResult<MeResponse>> GetMeAsync()
+    {
+        if (UserId is null)
+        {
+            return new MeResponse(null);
+        }
+
+        if (await userManager.FindByIdAsync(UserId.ToString()!) is not User user)
+        {
+            return new MeResponse(null);
+        }
+
+        return new MeResponse(user.Adapt<UserResponse>());
+    }
+
 }
