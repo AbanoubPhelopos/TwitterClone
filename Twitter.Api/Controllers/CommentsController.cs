@@ -8,7 +8,7 @@ namespace Twitter.Api.Controllers;
 
 [ApiController]
 [Route("api/posts/{postId:guid}/comments")]
-public class CommentsController(ApplicationDbContext context) : BaseController
+public class CommentsController(ApplicationDbContext context,UserManager<User> userManager) : BaseController
 {
     [HttpPost]
     [Authorize]
@@ -29,17 +29,35 @@ public class CommentsController(ApplicationDbContext context) : BaseController
             Content = request.Content,
         };
         
+        var actionUser = await userManager.FindByIdAsync(UserId.ToString()!);
+            
+        var newNotification = new Notification
+        {
+            UserId = post.AuthorId,
+            CreatedAt = DateTime.UtcNow,
+            Message = $"{actionUser!.FirstName} {actionUser!.LastName} has Commented at your post",
+            Type = "New Comment",
+            RelatedEntityId = postId,
+            RelatedEntityType = "Post"
+        };
+        context.Notifications.Add(newNotification);
+        
         post.Comments.Add(newComment);
         
         await context.SaveChangesAsync();
 
         return Ok(newComment.Adapt<CommentResponse>());
-    } 
+    }
     
     [HttpPut("{commentId:guid}",Name = "UpdateComment")]
     [Authorize]
     public async Task<ActionResult<PostResponse>> UpdateCommentAsync([FromBody] UpdateCommentRequest request,Guid postId, Guid commentId)
     {
+        if (await context.Posts.FirstOrDefaultAsync(p => p.Id == postId) is not Post post)
+        {
+            throw new Exception("PostNotFound");
+        }
+        
         if (await context.Comments.Include(c=>c.Writer).FirstOrDefaultAsync(c => c.PostId == postId && c.Id == commentId) is not Comment comment)
         {
             throw new Exception("CommentNotFound");
