@@ -6,7 +6,7 @@ namespace Twitter.Api.Controllers;
 
 [ApiController]
 [Route("api/posts/{postId:guid}/likes")]
-public class LikesController(ApplicationDbContext context) : BaseController
+public class LikesController(ApplicationDbContext context,UserManager<User> userManager) : BaseController
 {
     // Toggle like/unlike a post
     [HttpPost]
@@ -28,6 +28,9 @@ public class LikesController(ApplicationDbContext context) : BaseController
         if (existingLike != null)
         {
             post.Likes.Remove(existingLike);
+            var notification = await context.Notifications.FirstOrDefaultAsync(n => n.RelatedEntityId == postId);
+            if(notification is not null)
+                context.Notifications.Remove(notification);
             await context.SaveChangesAsync();
             return Ok("PostUnliked");
         }
@@ -39,7 +42,18 @@ public class LikesController(ApplicationDbContext context) : BaseController
                 LikerId = userId,
               
             };
-
+            var actionUser = await userManager.FindByIdAsync(userId.ToString());
+            
+            var newNotification = new Notification
+            {
+                UserId = post.AuthorId,
+                CreatedAt = DateTime.UtcNow,
+                Message = $"{actionUser!.FirstName} {actionUser!.LastName} has Liked your post",
+                Type = "New Like",
+                RelatedEntityId = postId,
+                RelatedEntityType = "Post"
+            };
+            context.Notifications.Add(newNotification);
             post.Likes.Add(newLike);
             await context.SaveChangesAsync();
             return Ok("PostLiked");
