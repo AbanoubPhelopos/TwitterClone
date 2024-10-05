@@ -1,8 +1,9 @@
-﻿namespace Twitter.Contract.Post;
+﻿namespace Twitter.Contract.Posts;
 
 public record CreatePostRequest(
     string Title,
-    string Content
+    string Content,
+    Guid? OriginalPostId
     );
 
 

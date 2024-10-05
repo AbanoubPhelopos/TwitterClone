@@ -1,7 +1,5 @@
-﻿using System.Collections.Immutable;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Twitter.Contract.Models;
-using Twitter.Contract.Post;
 using Twitter.Contract.Posts;
 using Twitter.Contract.Users;
 
@@ -10,7 +8,7 @@ namespace Twitter.Api.Controllers;
 
 [ApiController]
 [Route("api/posts")]
-public class PostController(ApplicationDbContext context) : BaseController
+public class PostController(ApplicationDbContext context,UserManager<User> userManager) : BaseController
 {
     private readonly ApplicationDbContext _context = context;
     
@@ -22,13 +20,37 @@ public class PostController(ApplicationDbContext context) : BaseController
 
         var newPost = new Post
         {
+            Id = Guid.NewGuid(),
             AuthorId = UserId!.Value,
             PostedAt = now,
             UpdatedAt = now,
             Title = request.Title, 
             Content = request.Content,
         };
+        if (request.OriginalPostId is not null)
+        {
+            var post = await context.Posts.FirstOrDefaultAsync(p => p.Id == request.OriginalPostId);
+            if (post is null)
+            {
+                throw new Exception("Post Not Found");
+            }
 
+            newPost.OriginalPost = post;
+            
+            var actionUser = await userManager.FindByIdAsync(UserId.ToString()!);
+            
+            var newNotification = new Notification
+            {
+                UserId = post.AuthorId,
+                CreatedAt = DateTime.UtcNow,
+                Message = $"{actionUser!.FirstName} {actionUser!.LastName} has reposted your Post",
+                Type = "New Repost",
+                RelatedEntityId = newPost.Id,
+                RelatedEntityType = "Post"
+            };
+            _context.Notifications.Add(newNotification);
+        }
+        
         _context.Posts.Add(newPost);
         await _context.SaveChangesAsync();
 
@@ -85,7 +107,8 @@ public class PostController(ApplicationDbContext context) : BaseController
 
         return Ok(new PagedListResponse<PostResponse>(items, page!.Value, pages));
     }
-
+    
+    
     private static Expression<Func<Post, PostResponse>> SelectPost()
     {
         return p => new PostResponse(

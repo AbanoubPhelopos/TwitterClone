@@ -97,7 +97,6 @@ public class CommentsController(ApplicationDbContext context,UserManager<User> u
 
         return Ok(new PagedListResponse<CommentResponse>(items, page!.Value, pages));
     }
-
     private static Expression<Func<Comment, CommentResponse>> SelectComment()
     {
         return c => new CommentResponse(

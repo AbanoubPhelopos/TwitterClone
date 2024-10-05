@@ -1,4 +1,4 @@
-﻿using Twitter.Contract.Post;
+﻿using Twitter.Contract.Posts;
 
 namespace Twitter.Application.Services;
 
