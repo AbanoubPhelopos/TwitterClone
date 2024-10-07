@@ -10,4 +10,10 @@ public class User : IdentityUser<Guid>
     public string? Image { get; set; } = default!;
     
     public ICollection<Post> Posts = new List<Post>();
+
+    public ICollection<User> Followers = [];
+    public ICollection<Follow> FollowFollowers = [];
+    public ICollection<User> Followees = [];
+    public ICollection<Follow> FollowFollowees = [];
+
 }
