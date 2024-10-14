@@ -85,7 +85,14 @@ public class PostController(ApplicationDbContext context,UserManager<User> userM
     [HttpGet(Name = "Posts")]
     public async Task<ActionResult<PagedListResponse<PostResponse>>> GetPostsAsync(string? search, int? page = 1, int? pageSize = 10)
     {
-        var query = _context.Posts.AsNoTracking();
+        
+        var followedUserIds = await _context.Follows
+            .Where(f => f.FollowerId == UserId!.Value)
+            .Select(f => f.FolloweeId)
+            .ToListAsync();
+
+        var query = _context.Posts.AsNoTracking()
+            .Where(p => followedUserIds.Contains(p.AuthorId));
 
         if (!string.IsNullOrEmpty(search))
         {

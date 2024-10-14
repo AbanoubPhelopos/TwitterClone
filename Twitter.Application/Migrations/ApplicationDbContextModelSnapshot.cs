@@ -22,6 +22,21 @@ namespace Twitter.Application.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Follow", b =>
+                {
+                    b.Property<Guid>("FollowerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FolloweeId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("FollowerId", "FolloweeId");
+
+                    b.HasIndex("FolloweeId");
+
+                    b.ToTable("Follows");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -277,7 +292,7 @@ namespace Twitter.Application.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("Twitter.Application.Models.User", b =>
+            modelBuilder.Entity("User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -353,6 +368,25 @@ namespace Twitter.Application.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Follow", b =>
+                {
+                    b.HasOne("User", "Followee")
+                        .WithMany("Followers")
+                        .HasForeignKey("FolloweeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("User", "Follower")
+                        .WithMany("Followees")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Followee");
+
+                    b.Navigation("Follower");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -364,7 +398,7 @@ namespace Twitter.Application.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Twitter.Application.Models.User", null)
+                    b.HasOne("User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -373,7 +407,7 @@ namespace Twitter.Application.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Twitter.Application.Models.User", null)
+                    b.HasOne("User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -388,7 +422,7 @@ namespace Twitter.Application.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Twitter.Application.Models.User", null)
+                    b.HasOne("User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -397,7 +431,7 @@ namespace Twitter.Application.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Twitter.Application.Models.User", null)
+                    b.HasOne("User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -412,7 +446,7 @@ namespace Twitter.Application.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Twitter.Application.Models.User", "Writer")
+                    b.HasOne("User", "Writer")
                         .WithMany()
                         .HasForeignKey("WriterId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -425,7 +459,7 @@ namespace Twitter.Application.Migrations
 
             modelBuilder.Entity("Twitter.Application.Models.Like", b =>
                 {
-                    b.HasOne("Twitter.Application.Models.User", "Liker")
+                    b.HasOne("User", "Liker")
                         .WithMany()
                         .HasForeignKey("LikerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -444,7 +478,7 @@ namespace Twitter.Application.Migrations
 
             modelBuilder.Entity("Twitter.Application.Models.Notification", b =>
                 {
-                    b.HasOne("Twitter.Application.Models.User", "User")
+                    b.HasOne("User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -455,7 +489,7 @@ namespace Twitter.Application.Migrations
 
             modelBuilder.Entity("Twitter.Application.Models.Post", b =>
                 {
-                    b.HasOne("Twitter.Application.Models.User", "Author")
+                    b.HasOne("User", "Author")
                         .WithMany("Posts")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -478,8 +512,12 @@ namespace Twitter.Application.Migrations
                     b.Navigation("Likes");
                 });
 
-            modelBuilder.Entity("Twitter.Application.Models.User", b =>
+            modelBuilder.Entity("User", b =>
                 {
+                    b.Navigation("Followees");
+
+                    b.Navigation("Followers");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

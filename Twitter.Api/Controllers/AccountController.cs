@@ -56,7 +56,7 @@ public class AccountController(UserManager<User> userManager, IAuthServices auth
 
     }
 
-
+    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<MeResponse>> GetMeAsync()
     {

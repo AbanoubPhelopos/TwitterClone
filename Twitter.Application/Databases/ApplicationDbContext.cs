@@ -12,6 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Like> Likes => Set<Like>();
     public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<Follow> Follows => Set<Follow>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
