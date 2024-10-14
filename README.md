@@ -45,14 +45,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## 🤝 Connect
 
 Feel free to check out my [LinkedIn post](https://www.linkedin.com/posts/abanoub-saweris_dotnet-activity-7251686920122974209-MX_g?utm_source=share&utm_medium=member_desktop) about the project or connect with me for any queries.
-
-## 🔗 GitHub Repository
-
-[GitHub Repo](https://github.com/AbanoubPhelopos/TwitterClone)
-
----
-
-### 📬 Contact
-
-If you have any questions or suggestions, feel free to reach out!
-
