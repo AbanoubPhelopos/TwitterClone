@@ -87,7 +87,6 @@ public class LikesController(ApplicationDbContext context,UserManager<User> user
     {
         return l => new UserResponse(
             l.Liker.Id,
-            l.Liker.UserName!,
             l.Liker.FirstName,
             l.Liker.LastName,
             null

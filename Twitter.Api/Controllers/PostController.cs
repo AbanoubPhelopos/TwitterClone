@@ -120,14 +120,14 @@ public class PostController(ApplicationDbContext context,UserManager<User> userM
     {
         return p => new PostResponse(
             p.Id,
-            new UserResponse(p.Author.Id, p.Author.UserName!, p.Author.FirstName, p.Author.LastName, null),
+            new UserResponse(p.Author.Id, p.Author.FirstName, p.Author.LastName, null),
             p.Title,
             p.Content,
             p.PostedAt,
             p.UpdatedAt, p.OriginalPost ==null ? null :
             new PostResponse(
                 p.OriginalPost!.Id,
-                new UserResponse(p.OriginalPost!.Author.Id, p.OriginalPost!.Author.UserName!, p.OriginalPost!.Author.FirstName, p.OriginalPost!.Author.LastName, null),
+                new UserResponse(p.OriginalPost!.Author.Id, p.OriginalPost!.Author.FirstName, p.OriginalPost!.Author.LastName, null),
                 p.OriginalPost!.Title,
                 p.OriginalPost!.Content,
                 p.OriginalPost!.PostedAt,

@@ -101,7 +101,7 @@ public class CommentsController(ApplicationDbContext context,UserManager<User> u
     {
         return c => new CommentResponse(
             c.Id,
-            new UserResponse(c.Writer.Id, c.Writer.UserName!, c.Writer.FirstName, c.Writer.LastName, null),
+            new UserResponse(c.Writer.Id, c.Writer.FirstName, c.Writer.LastName, null),
             c.Content,
             c.CreatedAt,
             c.UpdatedAt
