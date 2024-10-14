@@ -1,6 +1,6 @@
 # Twitter Clone Project 🐦
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/posts/abanoub-saweris)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/in/abanoub-saweris/)
 
 This project is a feature-rich Twitter clone built using **ASP.NET Web API** and **Onion Architecture**. The application replicates many core functionalities of Twitter, including user authentication, posting, commenting, liking, and following. I used a cloud **PostgreSQL** database for managing user data and interactions.
 
