@@ -35,6 +35,20 @@
                 };
 
                 context.Follows.Add(follow);
+
+                var actionUser = await userManager.FindByIdAsync(userId.ToString());
+
+                var newNotification = new Notification
+                {
+                    UserId = followeeId,
+                    CreatedAt = DateTime.UtcNow,
+                    Message = $"{actionUser!.FirstName} {actionUser!.LastName} has followed you",
+                    Type = "New Follow",
+                    RelatedEntityId = userId,
+                    RelatedEntityType = "User"
+                };
+                context.Notifications.Add(newNotification);
+
                 await context.SaveChangesAsync();
                 return Ok("Followed successfully.");
             }

@@ -140,10 +140,26 @@ public class PostController(ApplicationDbContext context,UserManager<User> userM
             0
         );
     }
-
-    [HttpGet("feed",Name = "Feed")]
-    public async Task<ActionResult> GetFeedAsync(string? search)
+    
+    [HttpDelete("{postId:guid}", Name = "DeletePost")]
+    [Authorize]
+    public async Task<IActionResult> DeletePostAsync(Guid postId)
     {
-        throw new NotImplementedException();
+        var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+        if (post == null)
+        {
+            return NotFound(new { Message = "Post not found" });
+        }
+
+        if (post.AuthorId != UserId)
+        {
+            return Forbid();
+        }
+
+        _context.Posts.Remove(post);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
+
 }

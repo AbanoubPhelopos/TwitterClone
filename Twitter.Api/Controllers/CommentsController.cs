@@ -107,4 +107,30 @@ public class CommentsController(ApplicationDbContext context,UserManager<User> u
             c.UpdatedAt
         );
     }
+    
+    [HttpDelete("{commentId:guid}", Name = "DeleteComment")]
+    [Authorize]
+    public async Task<IActionResult> DeleteCommentAsync(Guid postId, Guid commentId)
+    {
+        if (await context.Posts.FirstOrDefaultAsync(p => p.Id == postId) is not Post post)
+        {
+            return NotFound(new { Message = "Post not found" });
+        }
+
+        if (await context.Comments.FirstOrDefaultAsync(c => c.PostId == postId && c.Id == commentId) is not Comment comment)
+        {
+            return NotFound(new { Message = "Comment not found" });
+        }
+
+        if (comment.WriterId != UserId)
+        {
+            return Forbid();
+        }
+
+        context.Comments.Remove(comment);
+        await context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
 }
