@@ -34,13 +34,6 @@ The project is divided into several layers based on Onion Architecture:
 - **Twitter.Application**: Manages models, business services, and database interactions.
 - **Twitter.Contract**: Includes all Data Transfer Objects (DTOs) used across the application.
 
-## 🛡️ Security
-
-The application implements secure user authentication and authorization mechanisms to protect user data.
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 ## 🤝 Connect
 
